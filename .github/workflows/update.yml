@@ -1,4 +1,4 @@
-name: List Bal
+name: nernur liste
 
 on:
   workflow_dispatch:
