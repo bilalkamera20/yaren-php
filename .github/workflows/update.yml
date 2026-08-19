@@ -1,0 +1,43 @@
+name: List Bal
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 01 * * *'   # UTC 01:30 → Türkiye saatiyle 04:30
+
+jobs:
+  update_files:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Kodu Çek
+        uses: actions/checkout@v5   # En güncel checkout sürümü
+
+      - name: PHP Kurulumu
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: curl, json, mbstring
+
+      - name: Scripti Çalıştır
+        run: php balkica.php
+
+      - name: Değişiklikleri Kaydet ve Yükle
+        env:
+          TZ: Europe/Istanbul
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          if [ -f nernur.txt ]; then
+            git add nernur.txt
+          fi
+
+          if git diff --cached --quiet; then
+            echo "Değişiklik yok, commit atılmadı."
+          else
+            git commit -m "Otomatik Güncelleme: $(date +'%d.%m.%Y %H:%M')"
+            git push origin main
+          fi
