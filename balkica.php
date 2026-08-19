@@ -2,6 +2,7 @@
 error_reporting(0);
 set_time_limit(0);
 define('CATALOG_URL', 'https://vavoo.to/vto-cluster/mediahubmx-catalog.json');
+
 $worker_proxies = [
     'https://halil.bilalkamera20.workers.dev',
     'https://adam.bilalkamera20.workers.dev',
@@ -53,7 +54,11 @@ function main() {
         "clientVersion" => "3.0.2"
     ];
 
-    $output = "#EXTM3U\n"; // Başlık
+    $output = "#EXTM3U\n";
+
+    // Proxyleri sabit sırayla ardışık kullan
+    $proxy_index = 0;
+    $proxy_count = count($worker_proxies);
 
     while ($has_next && $page_count < $max_pages) {
         $page_count++;
@@ -79,8 +84,12 @@ function main() {
                 if (strcasecmp($group, 'Turkey') === 0 && preg_match('/bein|exxen|spor/i', $name)) {
                     $group = 'TR SPOR';
                 }
-                $random_proxy = $worker_proxies[array_rand($worker_proxies)];
-                $proxied_url = $random_proxy . "/?url=" . urlencode($url) . "&master&transport=http&.m3u8";
+
+                // Proxyleri sırayla kullan, bitince tekrar başa dön
+                $proxy = $worker_proxies[$proxy_index];
+                $proxy_index = ($proxy_index + 1) % $proxy_count;
+
+                $proxied_url = $proxy . "/?url=" . urlencode($url) . "&master&transport=http&.m3u8";
                 $output .= '#EXTINF:-1 group-title="' . $group . '",' . $name . "\n" . $proxied_url . "\n";
             }
             $next_cursor = isset($data['nextCursor']) ? $data['nextCursor'] : null;
@@ -96,7 +105,6 @@ function main() {
     }
     curl_close($ch);
 
-    // Çıktıyı dosyaya yaz
     file_put_contents('nernur.txt', $output);
 }
 
