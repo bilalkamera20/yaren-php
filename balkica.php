@@ -25,18 +25,24 @@ function get_vavoo_signature() {
 
 // -- Temizleme ve Kategorizasyon Yardımcıları -----------------------------
 
-function normalize_for_category($name) {
-    $s = preg_replace('/^\s*(?:4K\s*)?TR:\s*/i', '', $name);
-    $s = preg_replace('/\s+(?:UHD|FHD|HD\+|HD|SD|HEVC|RAW|H265|H\.265|FEED)(?=\s|$)/i', ' ', $s);
+function clean_channel_name($name) {
+    // İsim başındaki "4K TR:", "HEVC TR:", "TR:" gibi tüm kalıpları siler
+    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)*TR:\s*/i', '', $name);
+    
+    // Kalite takılarını kategorizasyon öncesi geçici temizlik için hafifletir
     $s = preg_replace('/\s*\.(?:b|c|s)\b/i', '', $s);
+    
+    // Çift boşlukları düzenler
     $s = preg_replace('/\s+/', ' ', $s);
+    
     return trim($s);
 }
 
-function clean_channel_name($name) {
-    // Görünür adı daha düzgün yapmak için temizleme
-    $s = preg_replace('/^\s*TR:\s*/i', '', $name);
-    $s = preg_replace('/\s*\.(?:b|c|s)\b/i', '', $s);
+function normalize_for_category($name) {
+    $s = clean_channel_name($name);
+    // Kategorizasyon filtrelerinin doğru eşleşmesi için ek kalite etiketlerini kaldırır
+    $s = preg_replace('/\s+(?:UHD|FHD|HD\+|HD|SD|HEVC|RAW|H265|H\.265|FEED)(?=\s|$)/i', ' ', $s);
+    $s = preg_replace('/\s+/', ' ', $s);
     return trim($s);
 }
 
@@ -139,26 +145,26 @@ function main() {
 
                 $raw_url = $item['url'];
                 
-                // Mükerrer kanal önleme
+                // Mükerrer yayın kontrolü
                 if (isset($seen_urls[$raw_url])) {
                     continue;
                 }
                 $seen_urls[$raw_url] = true;
 
                 $raw_name = isset($item['name']) ? $item['name'] : 'Bilinmeyen Kanal';
+                
+                // "4K TR:", "HEVC TR:", "TR:" temizliği yapılır
                 $clean_name = clean_channel_name($raw_name);
 
-                // Kanal grubu tanımlama
                 $raw_group = isset($item['group']) ? $item['group'] : '';
                 
-                // Gruplama mantığı: Eğer 'Turkey' ise detaylı kategorize et
                 if (strcasecmp($raw_group, 'Turkey') === 0 || empty($raw_group)) {
                     $group = categorize_channel($clean_name);
                 } else {
                     $group = $raw_group;
                 }
 
-                // Proxy seçimi (Round-Robin)
+                // Proxy sıra döngüsü
                 $proxy = $worker_proxies[$proxy_index];
                 $proxy_index = ($proxy_index + 1) % $proxy_count;
 
