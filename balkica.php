@@ -103,8 +103,8 @@ function main() {
     $max_pages = 200;
 
     $payload = [
-        "language" => "tr",
-        "region" => "TR",
+        "language" => "en",
+        "region" => "ALL",
         "catalogId" => "iptv",
         "id" => "iptv",
         "adult" => false,
