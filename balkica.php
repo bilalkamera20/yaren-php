@@ -26,12 +26,10 @@ function get_vavoo_signature() {
 // -- Temizleme ve Kategorizasyon Yardımcıları -----------------------------
 
 function clean_channel_name($name) {
-    // Sadece "4K TR:", "HEVC TR:", "TR:" gibi kesinleşmiş prefix kalıplarını siler
-    // Harf bölünmelerini engellemek için kelime sınırları (\b) ve zorunlu ön takı eşleşmeleri kullanılır
-    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)+TR:\s*/i', '', $name); // Ön takı + TR:
-    $s = preg_replace('/^\s*TR:\s*/i', '', $s);                       // Sadece TR:
+    // İsim başındaki "4K TR:", "HEVC TR:", "TR:" gibi tüm kalıpları siler
+    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)*TR:\s*/i', '', $name);
     
-    // Kalite takılarını (.b, .c, .s) yalnızca kelime sınırında temizler
+    // Kalite takılarını kategorizasyon öncesi geçici temizlik için hafifletir
     $s = preg_replace('/\s*\.(?:b|c|s)\b/i', '', $s);
     
     // Çift boşlukları düzenler
@@ -155,7 +153,7 @@ function main() {
 
                 $raw_name = isset($item['name']) ? $item['name'] : 'Bilinmeyen Kanal';
                 
-                // Düzeltilmiş temizleme fonksiyonu çağrılır
+                // "4K TR:", "HEVC TR:", "TR:" temizliği yapılır
                 $clean_name = clean_channel_name($raw_name);
 
                 $raw_group = isset($item['group']) ? $item['group'] : '';
