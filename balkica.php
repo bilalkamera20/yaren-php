@@ -26,10 +26,12 @@ function get_vavoo_signature() {
 // -- Temizleme ve Kategorizasyon Yardımcıları -----------------------------
 
 function clean_channel_name($name) {
-    // İsim başındaki "4K TR:", "HEVC TR:", "TR:" gibi tüm kalıpları siler
-    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)*TR:\s*/i', '', $name);
+    // Sadece "4K TR:", "HEVC TR:", "TR:" gibi kesinleşmiş prefix kalıplarını siler
+    // Harf bölünmelerini engellemek için kelime sınırları (\b) ve zorunlu ön takı eşleşmeleri kullanılır
+    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)+TR:\s*/i', '', $name); // Ön takı + TR:
+    $s = preg_replace('/^\s*TR:\s*/i', '', $s);                       // Sadece TR:
     
-    // Kalite takılarını kategorizasyon öncesi geçici temizlik için hafifletir
+    // Kalite takılarını (.b, .c, .s) yalnızca kelime sınırında temizler
     $s = preg_replace('/\s*\.(?:b|c|s)\b/i', '', $s);
     
     // Çift boşlukları düzenler
@@ -96,6 +98,101 @@ function main() {
     ]);
 
     $cursor = 0;
+    $has_next = true;
+    $seen_cursors = [];
+    $seen_urls = [];
+    $page_count = 0;
+    $max_pages = 200;
+
+    $payload = [
+        "language" => "en",
+        "region" => "ALL",
+        "catalogId" => "iptv",
+        "id" => "iptv",
+        "adult" => false,
+        "search" => "",
+        "sort" => "name",
+        "filter" => new stdClass(),
+        "clientVersion" => "3.0.2"
+    ];
+
+    $output = "#EXTM3U\n";
+
+    $proxy_index = 0;
+    $proxy_count = count($worker_proxies);
+
+    while ($has_next && $page_count < $max_pages) {
+        $page_count++;
+        $payload["cursor"] = $cursor;
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        
+        $response = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if ($response && $http_code === 200) {
+            $json_start = strpos($response, '{');
+            if ($json_start !== false) {
+                $response = substr($response, $json_start);
+            }
+
+            $data = json_decode($response, true);
+            $items = isset($data['items']) ? $data['items'] : [];
+
+            if (empty($items)) {
+                break;
+            }
+
+            foreach ($items as $item) {
+                if (empty($item['url'])) continue;
+
+                $raw_url = $item['url'];
+                
+                // Mükerrer yayın kontrolü
+                if (isset($seen_urls[$raw_url])) {
+                    continue;
+                }
+                $seen_urls[$raw_url] = true;
+
+                $raw_name = isset($item['name']) ? $item['name'] : 'Bilinmeyen Kanal';
+                
+                // Düzeltilmiş temizleme fonksiyonu çağrılır
+                $clean_name = clean_channel_name($raw_name);
+
+                $raw_group = isset($item['group']) ? $item['group'] : '';
+                
+                if (strcasecmp($raw_group, 'Turkey') === 0 || empty($raw_group)) {
+                    $group = categorize_channel($clean_name);
+                } else {
+                    $group = $raw_group;
+                }
+
+                // Proxy sıra döngüsü
+                $proxy = $worker_proxies[$proxy_index];
+                $proxy_index = ($proxy_index + 1) % $proxy_count;
+
+                $proxied_url = $proxy . "/?url=" . urlencode($raw_url) . "&master&transport=http&.m3u8";
+                $output .= '#EXTINF:-1 group-title="' . htmlspecialchars($group) . '",' . $clean_name . "\n" . $proxied_url . "\n";
+            }
+
+            $next_cursor = isset($data['nextCursor']) ? $data['nextCursor'] : null;
+            if (!$next_cursor || in_array($next_cursor, $seen_cursors, true)) {
+                $has_next = false;
+            } else {
+                $seen_cursors[] = $cursor;
+                $cursor = $next_cursor;
+            }
+        } else {
+            break;
+        }
+    }
+
+    curl_close($ch);
+
+    file_put_contents(OUTPUT_FILE, $output);
+}
+
+main();
+?>
     $has_next = true;
     $seen_cursors = [];
     $seen_urls = [];
