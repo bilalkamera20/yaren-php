@@ -26,18 +26,17 @@ function get_vavoo_signature() {
 // -- Temizleme ve Kategorizasyon Yardımcıları -----------------------------
 
 function clean_channel_name($name) {
-    $s = $name;
-
-    // 1. Baş taraftaki bilinen prefix etiketlerini güvenli şekilde siler (Harf yemez)
-    // Örn: "TR:", "TR -", "4K TR:", "HEVC TR", "TR" kalıplarını temizler
-    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)*(?:TR|TURK|TURKEY)[:\s-]+\s*/i', '', $s);
-
-    // 2. Kanal adının başındaki veya sonundaki ek kalite takılarını (.b, .c, .s) temizler
+    // Sadece "4K TR:", "HEVC TR:", "TR:" gibi kesinleşmiş prefix kalıplarını siler
+    // Harf bölünmelerini engellemek için kelime sınırları (\b) ve zorunlu ön takı eşleşmeleri kullanılır
+    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)+TR:\s*/i', '', $name); // Ön takı + TR:
+    $s = preg_replace('/^\s*TR:\s*/i', '', $s);                       // Sadece TR:
+    
+    // Kalite takılarını (.b, .c, .s) yalnızca kelime sınırında temizler
     $s = preg_replace('/\s*\.(?:b|c|s)\b/i', '', $s);
-
-    // 3. Çift ve fazla boşlukları teke indirir
+    
+    // Çift boşlukları düzenler
     $s = preg_replace('/\s+/', ' ', $s);
-
+    
     return trim($s);
 }
 
@@ -156,7 +155,7 @@ function main() {
 
                 $raw_name = isset($item['name']) ? $item['name'] : 'Bilinmeyen Kanal';
                 
-                // Düzeltilmiş isim temizleme fonksiyonu çağrısı
+                // Düzeltilmiş temizleme fonksiyonu çağrılır
                 $clean_name = clean_channel_name($raw_name);
 
                 $raw_group = isset($item['group']) ? $item['group'] : '';
