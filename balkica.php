@@ -26,20 +26,18 @@ function get_vavoo_signature() {
 // -- Temizleme ve Kategorizasyon Yardımcıları -----------------------------
 
 function clean_channel_name($name) {
-    // Yalnızca metinde açıkça "TR:" takısı varsa baş tarafı temizler.
-    // "TR:" bulunmuyorsa DREAM, GLOBAL, PROTURK, ULTRA gibi isimlerin baş harflerine dokunmaz.
-    if (preg_match('/TR:/i', $name)) {
-        $s = preg_replace('/^.*?TR:\s*/i', '', $name);
-    } else {
-        $s = $name;
-    }
-    
-    // Kalite takılarını (.b, .c, .s) yalnızca kelime sınırında temizler
+    $s = $name;
+
+    // 1. Baş taraftaki bilinen prefix etiketlerini güvenli şekilde siler (Harf yemez)
+    // Örn: "TR:", "TR -", "4K TR:", "HEVC TR", "TR" kalıplarını temizler
+    $s = preg_replace('/^\s*(?:[A-Z0-9-]+\s+)*(?:TR|TURK|TURKEY)[:\s-]+\s*/i', '', $s);
+
+    // 2. Kanal adının başındaki veya sonundaki ek kalite takılarını (.b, .c, .s) temizler
     $s = preg_replace('/\s*\.(?:b|c|s)\b/i', '', $s);
-    
-    // Çift boşlukları düzenler
+
+    // 3. Çift ve fazla boşlukları teke indirir
     $s = preg_replace('/\s+/', ' ', $s);
-    
+
     return trim($s);
 }
 
