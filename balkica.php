@@ -7,16 +7,46 @@ define('CATALOG_URL', 'https://vavoo.to/vto-cluster/mediahubmx-catalog.json');
 define('OUTPUT_FILE', 'nernur.txt');
 
 $worker_proxies = [
-    'https://halil.bilalkamera20.workers.dev',
-    'https://adam.bilalkamera20.workers.dev',
-    'https://ner.bilalkamera20.workers.dev',
-    'https://nur.bilalkamera20.workers.dev',
-    'https://vavoo-iptv-proxy.bilalkamera20.workers.dev',
-    'https://nernur.bilalkamera20.workers.dev',
-    'https://balkica.bilalkamera20.workers.dev',
-    'https://bilal.bilalkamera20.workers.dev',
-    'https://vav20.bilalkamera20.workers.dev',
-    'https://hmeb.bilalkamera20.workers.dev'
+        "https://1.vavturktv.workers.dev",
+        "https://2.vavturktv.workers.dev",
+        "https://3.vavturktv.workers.dev",
+        "https://4.vavturktv.workers.dev",
+        "https://5.vavturktv.workers.dev",
+        "https://6.vavturktv.workers.dev",
+        "https://7.vavturktv.workers.dev",
+        "https://8.vavturktv.workers.dev",
+        "https://9.vavturktv.workers.dev",
+        "https://10.vavturktv.workers.dev",
+        "https://11.vavturktv.workers.dev",
+        "https://12.vavturktv.workers.dev",
+        "https://13.vavturktv.workers.dev",
+        "https://14.vavturktv.workers.dev",
+        "https://15.vavturktv.workers.dev",
+        "https://16.vavturktv.workers.dev",
+        "https://17.vavturktv.workers.dev",
+        "https://18.vavturktv.workers.dev",
+        "https://19.vavturktv.workers.dev",
+        "https://20.vavturktv.workers.dev",
+        "https://21.vavturktv.workers.dev",
+        "https://22.vavturktv.workers.dev",
+        "https://23.vavturktv.workers.dev",
+        "https://24.vavturktv.workers.dev",
+        "https://25.vavturktv.workers.dev",
+        "https://nur.bilalkamera20.workers.dev",
+        "https://halil.bilalkamera20.workers.dev",
+        "https://adam.bilalkamera20.workers.dev",
+        "https://bilal.bilalkamera20.workers.dev",
+        "https://balkica.bilalkamera20.workers.dev",
+        "https://hmeb.bilalkamera20.workers.dev",
+        "https://nernur.bilalkamera20.workers.dev",
+        "https://vav20.bilalkamera20.workers.dev",
+        "https://vavoo-iptv-proxy.bilalkamera20.workers.dev",
+        "https://yaren.bilalkamera20.workers.dev",
+        "https://denem.bilalkamera20.workers.dev",
+        "https://20.bilalkamera20.workers.dev",
+        "https://yw.bilalkamera20.workers.dev",
+        "https://fb.bilalkamera20.workers.dev",
+        "https://ner.bilalkamera20.workers.dev"
 ];
 
 function get_vavoo_signature() {
@@ -76,10 +106,10 @@ function categorize_channel($name) {
     }
 
     $rules = [
+        'TR Spor' => '/BEIN SPO[RT]{0,3}S?|\bBEIN 1\b|S[- ]?SPORTS?|\bS SPORT\b|SPOR SMART|EUROSPORT|\bNBA\b|TJK TV|TIVIBU ?SPOR|TIVIBUSPOR|TRT SPOR|TABII SPOR|EXXEN SPO[RT]?|\bHT SPOR\b|EKOL SPOR|SPORTS TV|IDMAN TV|GALATASARAY TV|\bFB TV\b|\bGS TV\b|SARAN SPORT|SMART SPOR|\bSPOR\b|\bSPORT\b/i',
         'TR Radyo' => '/\b(RADIO|RADYO)\b|\b(FM|MBAT FM|EFKAR FM|FMTV|F ?M)\b(?!\s*TV)|POWERTURK|POWER FM|SHOW RADYO|ALEM (?:FM|RADYO)|BABA RADYO|KRAL POP RADYO|PAL STATION|X NOSTALJI|RADIO ROCK|STANBUL FM/i',
         'TR Çocuk' => '/CARTOON|BOOMERANG|DISNEY|NICK(?:ELODEON|TOONS|JR|JUNIOR|\b)|BABY ?TV|BABYTV|MINIKA|MINICA|POKEMON|ANIMATION|ANIMASYON|TRT ?COCUK|COCUK HD|\bCOCUK\b|ANKA|BEN ?10|ANGRY BIRDS|CAILLOU|PEPPA|PEPE|HEIDI|SIRINLER|TOM & JERRY|SUNGER|SUNGER\s*BOB|SPIDERMAN|BARBIE|PIJAMA|PIRIL|RAFADAN|KELOGLAN|KUKULI|KUKILI|KOSTEBEK|CHICKY|BOOBA|WAKFU|GABBY|TAYO|NILOYA|PISI|LEYLEK|MASAL|CANIM KARDESIM|ADIBESA|MOMO|ALVIN|VIKINGLER|TRANSFORMERS|TROL AVCILARI|SMART\s*COCUK|COCUK\s*SMART|ILAHI COCUK|CILGIN ORMAN|KRAL SAKIR|SERCE KUS|ITFAYECI SAM|MUFFETIS|MAYMUNLAR|ELIF VE|ELIFIN|MIMOCAN|HAPSUU|RUYA TRENI|MASA KOCAAYI|PAK PIRPIR|LIMON ZEYTIN|GONCA TV|NASREDDIN|SEKER HOCA|SEVIMLI DOSTLAR|PAW PETROL|OSCAR COLLERDE|SL NILOYA|CBEEBIES|DUCK TV|JIM ?JAM|ENGLISH CLUB TV|EBA TV|TAVSAN|PATRON BEBEK|DIYARI|BAHA\b|SEF ROKKA|BULMACA KULESI|AKILLI TAVSAN|AKLILI|DA VINC KIDS|DA VINCI KIDS|DINAMIK ANIMASYON|BEST ANIMASYON|YILDIZ KIZ|KONUSAN TOM|JURASSIC WORLD|MONTAG|64\s*KARE/i',
         'TR Belgesel' => '/DISCOVERY|NATIONAL GEOGRAPHIC|NAT ?GEO|\bHISTORY\b|ANIMAL PLANET|DA VINCI(?! KIDS)|VIASAT|BBC EARTH|LOVE NATURE|TRT BELGESEL|EPIC DRAMA|TARIH TV|TARIM TV|TGRT BELGESEL|INVESTIGATION|DMAX|DOCUBOX|DOCU SCREEN|SCIENCE|\bIZ TV\b|YABAN|OUTDOOR|CHASSE|ANIMAUX|AGRO TV|CIFTCI TV|REDBULL TV|\bTLC\b/i',
-        'TR Spor' => '/BEIN SPO[RT]{0,3}S?|\bBEIN 1\b|S[- ]?SPORTS?|\bS SPORT\b|SPOR SMART|EUROSPORT|\bNBA\b|TJK TV|TIVIBU ?SPOR|TIVIBUSPOR|TRT SPOR|TABII SPOR|EXXEN SPO[RT]?|\bHT SPOR\b|EKOL SPOR|SPORTS TV|IDMAN TV|GALATASARAY TV|\bFB TV\b|\bGS TV\b|SARAN SPORT|SMART SPOR|\bSPOR\b|\bSPORT\b/i',
         'TR Yaşam' => '/24 KITCHEN|GURME|BEIN GURME|LIFESTYLE|\bLIFE TV\b|FASHION|WM TV|EGE ILE GAGA|24 RAW|\bTVEM\b|\bTV EM\b|AUTOMOTO|LINE TV|BILGILENDIRME|WOMAN|TELEGRAM/i',
         'TR Haber' => '/\b24\s*TV\b|\bTV\s*24\b|\b24\s*HABER\b|^24$|\bHABER\b|\bNEWS\b|BLOOMBERG|\bCNN\b|EKOTURK|\bEKO ?TURK\b|\bEKOL\b|A ?PARA|APARA|PARANIN|HALK TV|TELE ?1|SOZCU|\bSZC\b|BENGU|BENGUTURK|TRT WORLD|TRT HABER|\bDHA\b|LIDER HABER|FLASH|FLASH HABER|MEDYA HABER|GLOBAL HABER|TRABZON HABER|BEIN SPORTS HABER|TURKHABER|HABERTURK|\bARTI TV\b|\bAKIT\b|TVNET|TV NET|MELTEM|A HABER|ULKE|A NEWS|KRT|ULUSAL/i',
         'TR Film' => '/DREAM|DINAMIK\s*TURK|SINEMA|CINEMA|SINEMAX|SINEVIZYON|\bMOVIES?\b|MOVIEMAX|MOVIESMART|BEIN MOVIES|BEIN BOX|BOX OFFICE|\bFX\b|FX HD|YESILCAM|GLOBAL BOX|PROTURK|FIX CINEMA|KINGBOX|ARENA BOX|SHOWMAX|SHOW MAX|REAL BOX|SMART BOX|BEST (?:AKSIYON|BILIMKURGU|DRAM|HABABAM|IMBD|KOMEDI|KORKU|LOCA|NETFLIX|SALON|SAVAS|TURK|WESTERN|YESILCAM)|MAX|\bLOCA\b|\bSALON\b|\bVIZYON\b|AKSIYON|KOMEDI|\bKORKU\b|\bDRAM\b|WESTERN|BILIM ?KURGU|\bSAVAS\b|\bIMBD\b|\bIMDB\b|\bFILM\b|FILMBOX|HORROR|OSCAR|KEMAL SUNAL|\b007\b|\bCINE ?1\b|SIFIR TV|SON C BOOM|\bYERLI\b|SPIDERMAN(?! TV)|ARENA BOX|MOVIE SMART|\bMTURK TV\b/i',
