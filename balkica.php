@@ -6,48 +6,73 @@ set_time_limit(0);
 define('CATALOG_URL', 'https://vavoo.to/vto-cluster/mediahubmx-catalog.json');
 define('OUTPUT_FILE', 'nernur.txt');
 
-$worker_proxies = [
-        "https://1.vavturktv.workers.dev",
-        "https://2.vavturktv.workers.dev",
-        "https://3.vavturktv.workers.dev",
-        "https://4.vavturktv.workers.dev",
-        "https://5.vavturktv.workers.dev",
-        "https://6.vavturktv.workers.dev",
-        "https://7.vavturktv.workers.dev",
-        "https://8.vavturktv.workers.dev",
-        "https://9.vavturktv.workers.dev",
-        "https://10.vavturktv.workers.dev",
-        "https://11.vavturktv.workers.dev",
-        "https://12.vavturktv.workers.dev",
-        "https://13.vavturktv.workers.dev",
-        "https://14.vavturktv.workers.dev",
-        "https://15.vavturktv.workers.dev",
-        "https://16.vavturktv.workers.dev",
-        "https://17.vavturktv.workers.dev",
-        "https://18.vavturktv.workers.dev",
-        "https://19.vavturktv.workers.dev",
-        "https://20.vavturktv.workers.dev",
-        "https://21.vavturktv.workers.dev",
-        "https://22.vavturktv.workers.dev",
-        "https://23.vavturktv.workers.dev",
-        "https://24.vavturktv.workers.dev",
-        "https://25.vavturktv.workers.dev",
-        "https://nur.bilalkamera20.workers.dev",
-        "https://halil.bilalkamera20.workers.dev",
-        "https://adam.bilalkamera20.workers.dev",
-        "https://bilal.bilalkamera20.workers.dev",
-        "https://balkica.bilalkamera20.workers.dev",
-        "https://hmeb.bilalkamera20.workers.dev",
-        "https://nernur.bilalkamera20.workers.dev",
-        "https://vav20.bilalkamera20.workers.dev",
-        "https://vavoo-iptv-proxy.bilalkamera20.workers.dev",
-        "https://yaren.bilalkamera20.workers.dev",
-        "https://denem.bilalkamera20.workers.dev",
-        "https://20.bilalkamera20.workers.dev",
-        "https://yw.bilalkamera20.workers.dev",
-        "https://fb.bilalkamera20.workers.dev",
-        "https://ner.bilalkamera20.workers.dev"
+// Yedek Proxy Listesi
+$fallback_proxies = [
+    "https://1.vavturktv.workers.dev",
+    "https://2.vavturktv.workers.dev",
+    "https://3.vavturktv.workers.dev",
+    "https://4.vavturktv.workers.dev",
+    "https://5.vavturktv.workers.dev",
+    "https://6.vavturktv.workers.dev",
+    "https://7.vavturktv.workers.dev",
+    "https://8.vavturktv.workers.dev",
+    "https://9.vavturktv.workers.dev",
+    "https://10.vavturktv.workers.dev",
+    "https://11.vavturktv.workers.dev",
+    "https://12.vavturktv.workers.dev",
+    "https://13.vavturktv.workers.dev",
+    "https://14.vavturktv.workers.dev",
+    "https://15.vavturktv.workers.dev",
+    "https://16.vavturktv.workers.dev",
+    "https://17.vavturktv.workers.dev",
+    "https://18.vavturktv.workers.dev",
+    "https://19.vavturktv.workers.dev",
+    "https://20.vavturktv.workers.dev",
+    "https://21.vavturktv.workers.dev",
+    "https://22.vavturktv.workers.dev",
+    "https://23.vavturktv.workers.dev",
+    "https://24.vavturktv.workers.dev",
+    "https://25.vavturktv.workers.dev",
+    "https://nur.bilalkamera20.workers.dev",
+    "https://halil.bilalkamera20.workers.dev",
+    "https://adam.bilalkamera20.workers.dev",
+    "https://bilal.bilalkamera20.workers.dev",
+    "https://balkica.bilalkamera20.workers.dev",
+    "https://hmeb.bilalkamera20.workers.dev",
+    "https://nernur.bilalkamera20.workers.dev",
+    "https://vav20.bilalkamera20.workers.dev",
+    "https://vavoo-iptv-proxy.bilalkamera20.workers.dev",
+    "https://yaren.bilalkamera20.workers.dev",
+    "https://denem.bilalkamera20.workers.dev",
+    "https://20.bilalkamera20.workers.dev",
+    "https://yw.bilalkamera20.workers.dev",
+    "https://fb.bilalkamera20.workers.dev",
+    "https://ner.bilalkamera20.workers.dev"
 ];
+
+// Ortam değişkeninden (ENV) PROXY_BASE değerini al ve ayrıştır
+function parse_env_proxies() {
+    $env_proxy = getenv('PROXY_BASE');
+    if (!$env_proxy) {
+        return [];
+    }
+
+    // Virgül, noktalı virgül veya alt satıra göre böl
+    $raw_list = preg_split('/[,;\r\n]+/', $env_proxy);
+    $proxies = [];
+
+    foreach ($raw_list as $item) {
+        $trimmed = trim($item);
+        if (!empty($trimmed)) {
+            $proxies[] = rtrim($trimmed, '/');
+        }
+    }
+
+    return $proxies;
+}
+
+$env_proxies = parse_env_proxies();
+$worker_proxies = !empty($env_proxies) ? $env_proxies : $fallback_proxies;
 
 function get_vavoo_signature() {
     return ""; 
