@@ -252,7 +252,7 @@ function main() {
                 $proxy = $worker_proxies[$proxy_index];
                 $proxy_index = ($proxy_index + 1) % $proxy_count;
 
-                $proxied_url = $proxy . "/?url=" . urlencode($raw_url) . "&master&transport=http&.m3u8";
+                $proxied_url = $proxy . "/?url=" . urlencode($raw_url);
                 $output .= '#EXTINF:-1 group-title="' . htmlspecialchars($group) . '"' . $logo . ',' . $clean_name . "\n" . $proxied_url . "\n";
             }
 
