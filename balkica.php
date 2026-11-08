@@ -3,7 +3,7 @@ error_reporting(E_ALL & ~E_NOTICE);
 ini_set('display_errors', '0');
 set_time_limit(0);
 
-define('CATALOG_URL', 'https://vavoo.to/vto-cluster/mediahubmx-catalog.json');
+define('CATALOG_URL', 'https://vavoo.to/mediahubmx-catalog.json');
 define('OUTPUT_FILE', 'nernur.txt');
 
 // Yedek Proxy Listesi
