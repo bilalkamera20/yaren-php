@@ -4,18 +4,13 @@ ini_set('memory_limit', '256M');
 set_time_limit(0);
 if (ob_get_level() == 0) ob_start();
 
-header("Content-Type: audio/x-mpegurl; charset=utf-8");
-header('Content-Disposition: attachment; filename="VavooM.m3u"');
-header("Pragma: no-cache");
-header("Expires: 0");
-
 // ============================================================
 //  SABİTLER VE PROXY TANIMLARI
 // ============================================================
 const UA             = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
 const CLIENT_VERSION = '3.1.4';
-const CATALOG_URL    = 'https://vavoo.to/mediahubmx-catalog.json';
-const OUTPUT_FILE    = 'nernur.txt';
+define('CATALOG_URL', 'https://vavoo.to/mediahubmx-catalog.json');
+define('OUTPUT_FILE', 'nernur.txt');
 
 // Gelişmiş Yedekli Worker Proxy Havuzu
 $fallback_proxies = [
@@ -87,7 +82,6 @@ const PING_URLS = [
     'https://cache.vypn.net/api/app/ping',
 ];
 
-// Taranacak Katalog Grupları
 const DEFAULT_GROUPS = [
     'Turkey'
 ];
@@ -243,11 +237,9 @@ function fetch_catalog_group($group, $signature) {
 
         foreach ($items as $itm) {
             $raw_name = $itm['name'] ?? '';
-            // Gelişmiş Temizleme Fonksiyonu Uygulanıyor
             $name = clean_channel_name($raw_name);
             if ($name === '') $name = 'Isimsiz Kanal';
 
-            // Akıllı Kategorilendirme Fonksiyonu Uygulanıyor
             $resolved_group = categorize_channel($raw_name);
 
             $chid = '';
@@ -290,7 +282,7 @@ function fetch_catalog_group($group, $signature) {
 }
 
 // ============================================================
-//  M3U ÜRETİMİ (Proxy Havuzundan Rastgele/Sıralı Seçim)
+//  M3U ÜRETİMİ VE DOSYAYA KAYDETME
 // ============================================================
 function build_m3u($channels, $proxies) {
     $out = ["#EXTM3U"];
@@ -301,18 +293,16 @@ function build_m3u($channels, $proxies) {
     $proxy_count = count($proxies);
     $proxy_index = 0;
 
-    foreach ($channels as $index => $ch) {
+    foreach ($channels as $ch) {
         $logo = $ch['logo'] ? ' tvg-logo="' . $ch['logo'] . '"' : '';
         $tvg  = $ch['tvg_id'] ? ' tvg-id="' . $ch['tvg_id'] . '"' : '';
         
         $out[] = '#EXTINF:-1' . $tvg . ' tvg-name="' . $ch['name'] . '"'
                . $logo . ' group-title="' . $ch['group'] . '",' . $ch['name'];
         
-        // Proxy havuzundan sırayla (Round-Robin) veya rastgele Worker seçimi
         $active_proxy = $proxies[$proxy_index % $proxy_count];
         $proxy_index++;
 
-        // Son URL formatı: PROXY + urlencode(orijinal_link) + ek parametreler
         $out[] = rtrim($active_proxy, '/') . '/?url=' . urlencode($ch['url']) . '&master&transport=http&.m3u8';
     }
     return implode("\n", $out) . "\n";
@@ -337,6 +327,16 @@ if (empty($all_channels)) {
     exit('Kanal bulunamadi');
 }
 
-// Çıktıyı M3U formatında tarayıcıya/oynatıcıya sun
-echo build_m3u($all_channels, $worker_proxies);
+$m3u_content = build_m3u($all_channels, $worker_proxies);
+
+// İsteğe bağlı olarak içeriği hem OUTPUT_FILE dosyasına yazabilir
+// hem de doğrudan indirebilirsiniz:
+file_put_contents(OUTPUT_FILE, $m3u_content);
+
+header("Content-Type: audio/x-mpegurl; charset=utf-8");
+header('Content-Disposition: attachment; filename="' . OUTPUT_FILE . '"');
+header("Pragma: no-cache");
+header("Expires: 0");
+
+echo $m3u_content;
 exit;
