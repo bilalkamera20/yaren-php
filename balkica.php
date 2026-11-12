@@ -1,4 +1,4 @@
-<?php
+8<?php
 error_reporting(0);
 ini_set('memory_limit', '256M');
 set_time_limit(0);
@@ -286,10 +286,6 @@ function fetch_catalog_group($group, $signature) {
 // ============================================================
 function build_m3u($channels, $proxies) {
     $out = ["#EXTM3U"];
-    $out[] = "#EXT-X-USER-AGENT:" . UA;
-    $out[] = "#EXT-X-REFERER:https://vavoo.to/";
-    $out[] = "#EXT-X-ORIGIN:https://vavoo.to";
-
     $proxy_count = count($proxies);
     $proxy_index = 0;
 
